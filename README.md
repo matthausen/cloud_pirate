@@ -1,0 +1,3 @@
+CloudPirate
+
+CloudPirateBot
