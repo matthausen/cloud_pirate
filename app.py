@@ -1,7 +1,7 @@
+from __future__ import unicode_literals
 import os
 from telegram.ext import Updater, CommandHandler, ConversationHandler
 from telegram.parsemode import ParseMode
-from __future__ import unicode_literals
 from flask import Flask, render_template, request, send_from_directory
 from flask_cors import CORS
 import re
@@ -52,9 +52,10 @@ def main():
   
   conv_handler = ConversationHandler(
     entry_points=[CommandHandler('start', start)],
+    states={},
     fallbacks=[CommandHandler('cancel', cancel)]
   )
-  
+
   dp.add_handler(conv_handler)
   dp.add_handler(CommandHandler('help',help))
   dp.add_handler(CommandHandler('start',help))
