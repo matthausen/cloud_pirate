@@ -4,9 +4,11 @@ from telegram.ext import Updater, CommandHandler, ConversationHandler
 from telegram.parsemode import ParseMode
 from flask import Flask, render_template, request, send_from_directory
 from flask_cors import CORS
+import glob
 import re
 import youtube_dl
 from dotenv import load_dotenv
+
 load_dotenv()
 
 load_dotenv(verbose=True)
@@ -15,17 +17,23 @@ env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
 
 TELEGRAM_TOKEN = os.getenv("TOKEN")
+
 # Download the mp3 audio from a youtube video
-''' ydl_opts = {
+def download_audio(query):
+  ydl_opts = {
     'format': 'bestaudio/best',
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'mp3',
         'preferredquality': '192',
     }],
-}
-with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-    ydl.download(['http://www.youtube.com/watch?v=BaW_jenozKc']) '''
+  }
+  try:
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+      ydl.download(['https://www.youtube.com/watch?v=' + query])
+  except Exception:
+    return False
+  
 
 def help(bot, update):
   text="Hello User, You have used <b>start</b> command. Search about developer on google, <a href='https://www.google.com/search?q=tbhaxor'>@tbhaxor</a>"
@@ -36,15 +44,32 @@ def help(bot, update):
     )
 
 def download(bot, update):
-  url='http://localhost:3000'
-  user_input = update.message.text
-  print(f'Downloading: {url}. User input was: {user_input}')
+  message = update.message.text
+  input = message.split(' ')
+  input.pop(0)
+  user_input = " ".join(str(x) for x in input)
+  print(f'Downloading: {user_input}')
+  download_audio(input)
+  # send the audio file here
+  for audio in glob.glob('./*mp3'):
+    bot.send_audio(chat_id=update.message.chat_id, audio=open(audio, 'rb'))
 
-def start():
-  print('start')
 
-def cancel():
-  print('cancel!')
+def start(bot, update):
+  text="Hello User, You have used <b>start</b> command. Search about developer on google, <a href='https://www.google.com/search?q=tbhaxor'>@tbhaxor</a>"
+  bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text,
+        parse_mode=ParseMode.HTML,
+    )
+
+def cancel(bot, update):
+  text='Operation was cancelled!'
+  bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text,
+        parse_mode=ParseMode.HTML,
+    )
 
 def main():
   updater = Updater(TELEGRAM_TOKEN)
