@@ -5,6 +5,7 @@ from telegram.parsemode import ParseMode
 from flask import Flask, render_template, request, send_from_directory
 from flask_cors import CORS
 import glob
+from youtube_search import YoutubeSearch
 import re
 import youtube_dl
 from dotenv import load_dotenv
@@ -35,13 +36,18 @@ def download_audio(query):
     return False
   
 
-def help(bot, update):
-  text="Hello User, You have used <b>start</b> command. Search about developer on google, <a href='https://www.google.com/search?q=tbhaxor'>@tbhaxor</a>"
-  bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text,
-        parse_mode=ParseMode.HTML,
-    )
+def search(bot, update):
+  message = update.message.text
+  input = message.split(' ')
+  input.pop(0)
+  user_input = " ".join(str(x) for x in input)
+  print(f'Searching: {user_input}')
+  results = YoutubeSearch(user_input, max_results=10).to_dict()
+  # send results to the user (only id, thumbnails[0], title and duration).
+  for song in results:
+    for key, value in song.items():
+      print(key, value)
+
 
 def download(bot, update):
   message = update.message.text
@@ -54,6 +60,13 @@ def download(bot, update):
   for audio in glob.glob('./*mp3'):
     bot.send_audio(chat_id=update.message.chat_id, audio=open(audio, 'rb'))
 
+def help(bot, update):
+  text="Hello User, You have used <b>start</b> command. Search about developer on google, <a href='https://www.google.com/search?q=tbhaxor'>@tbhaxor</a>"
+  bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text,
+        parse_mode=ParseMode.HTML,
+    )
 
 def start(bot, update):
   text="Hello User, You have used <b>start</b> command. Search about developer on google, <a href='https://www.google.com/search?q=tbhaxor'>@tbhaxor</a>"
@@ -84,10 +97,11 @@ def main():
   dp.add_handler(conv_handler)
   dp.add_handler(CommandHandler('help',help))
   dp.add_handler(CommandHandler('start',help))
+  dp.add_handler(CommandHandler('search',search))
   dp.add_handler(CommandHandler('download',download))
   updater.start_polling()
   updater.idle()
 
 
 if __name__ == '__main__':
-  main()
+  main
