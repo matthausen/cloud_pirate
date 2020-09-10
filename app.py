@@ -83,7 +83,8 @@ def query_handler(bot, update):
     # Delete the previously saved files
     download_audio(song_id)
     for audio in glob.glob('./*mp3'):
-      bot.send_audio(chat_id=update.message.chat_id, audio=open(audio, 'rb'))
+      bot.send_audio(chat_id=query.message.chat_id, audio=open(audio, 'rb'))
+      os.remove(audio)
 
 
 def download(bot, update):
