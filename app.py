@@ -95,7 +95,7 @@ def donate(bot, update):
     )
 
 def help(bot, update):
-  text="To start, simply type <b>/search</b> or <b>/download</b> followed by the name of the song or artist you want to download and choose from one of the options."
+  text="To start, simply type <b>/search</b> or <b>/download</b> followed by a song or artist name you want to download. Then choose from one of the options."
   bot.send_message(
         chat_id=update.effective_chat.id,
         text=text,
@@ -103,7 +103,7 @@ def help(bot, update):
     )
 
 def start(bot, update):
-  text="To start, simply type <b>/search</b> or <b>/download</b> followed by the name of the song or artist you want to download and choose from one of the options."
+  text="To start, simply type <b>/search</b> or <b>/download</b> followed by a song or artist name you want to download. Then choose from one of the options."
   bot.send_message(
         chat_id=update.effective_chat.id,
         text=text,
