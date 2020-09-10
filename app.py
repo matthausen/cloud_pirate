@@ -79,27 +79,23 @@ def query_handler(bot, update):
 
     song_id = results_cleaned[int(query.data)-1]['id']
     
-    # send the audio file here
-    # Delete the previously saved files
+    # send the audio file and delete the previously saved files
     download_audio(song_id)
     for audio in glob.glob('./*mp3'):
       bot.send_audio(chat_id=query.message.chat_id, audio=open(audio, 'rb'))
       os.remove(audio)
 
 
-def download(bot, update):
-  message = update.message.text
-  input = message.split(' ')
-  input.pop(0)
-  user_input = " ".join(str(x) for x in input)
-  print(f'Downloading: {user_input}')
-  download_audio(input)
-  # send the audio file here
-  for audio in glob.glob('./*mp3'):
-    bot.send_audio(chat_id=update.message.chat_id, audio=open(audio, 'rb'))
+def donate(bot, update):
+  donation= "<form action='https://www.paypal.com/cgi-bin/webscr' method='post' target='_top'><input type='hidden' name='cmd' value='_s-xclick' /><input type='hidden' name='hosted_button_id' value='GFM5BFJ346QUJ' /><input type='image' src='https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif' border='0' name='submit' title='PayPal - The safer, easier way to pay online!' alt='Donate with PayPal button' /><img alt='donation' border='0' src='https://www.paypal.com/en_GB/i/scr/pixel.gif' width='1' height='1' /></form>"
+  bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=donation,
+        parse_mode=ParseMode.HTML,
+    )
 
 def help(bot, update):
-  text="Hello User, You have used <b>start</b> command. Search about developer on google, <a href='https://www.google.com/search?q=tbhaxor'>@tbhaxor</a>"
+  text="To start, simply type <b>/search</b> or <b>/download</b> followed by the name of the song or artist you want to download and choose from one of the options."
   bot.send_message(
         chat_id=update.effective_chat.id,
         text=text,
@@ -107,7 +103,7 @@ def help(bot, update):
     )
 
 def start(bot, update):
-  text="Hello User, You have used <b>start</b> command. Search about developer on google, <a href='https://www.google.com/search?q=tbhaxor'>@tbhaxor</a>"
+  text="To start, simply type <b>/search</b> or <b>/download</b> followed by the name of the song or artist you want to download and choose from one of the options."
   bot.send_message(
         chat_id=update.effective_chat.id,
         text=text,
@@ -136,7 +132,8 @@ def main():
   dp.add_handler(CommandHandler('help',help))
   dp.add_handler(CommandHandler('start',help))
   dp.add_handler(CommandHandler('search',search))
-  dp.add_handler(CommandHandler('download',download))
+  dp.add_handler(CommandHandler('download',search))
+  # dp.add_handler(CommandHandler('donate',donate))
 
   updater.dispatcher.add_handler(CallbackQueryHandler(query_handler))
 
